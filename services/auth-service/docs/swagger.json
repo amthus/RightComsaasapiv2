@@ -1,0 +1,316 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Authentication API",
+    "version": "1.0.0",
+    "description": "API pour la gestion de l'authentification des utilisateurs",
+    "contact": {
+      "name": "Support",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "192.168.0.6:3000",
+      "description": "Serveur local"
+    }
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "summary": "Inscription d'un nouvel utilisateur",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nom": { "type": "string" },
+                  "prenom": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "example": {
+                  "nom": "Dupont",
+                  "prenom": "Jean",
+                  "email": "jean.dupont@example.com",
+                  "password": "P#assword@123!"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Utilisateur créé avec succès" },
+          "400": { "description": "Données manquantes ou incorrectes" },
+          "409": { "description": "Email déjà utilisé" },
+          "500": { "description": "Erreur interne du serveur" }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Connexion de l'utilisateur",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "example": {
+                  "email": "jean.dupont@example.com",
+                  "password": "P#assword@123!"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connexion réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "acesstoken": { "type": "string" },
+                    "refreshtoken": { "type": "string" }
+
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Email ou mot de passe manquant" },
+          "401": { "description": "Email ou mot de passe incorrect" },
+          "500": { "description": "Erreur interne du serveur" }
+        }
+      }
+    },
+    "/users/forgot-password": {
+      "post": {
+        "summary": "Demande de réinitialisation du mot de passe",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" }
+                },
+                "example": {
+                  "email": "jean.dupont@example.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Email de réinitialisation envoyé" },
+          "400": { "description": "Email invalide" },
+          "404": { "description": "Utilisateur non trouvé" },
+          "500": { "description": "Erreur interne du serveur" }
+        }
+      }
+    },
+    "/users/reset-password": {
+      "post": {
+        "summary": "Réinitialisation du mot de passe",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" },
+                  "newPassword": { "type": "string" }
+                },
+                "example": {
+                  "token": "votre-token-de-réinitialisation",
+                  "newPassword": "NouveauPassword123!"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Mot de passe réinitialisé avec succès" },
+          "400": { "description": "Token invalide ou expiré, ou mot de passe faible" },
+          "500": { "description": "Erreur interne du serveur" }
+        }
+      }
+    },
+    "/users/getprofile": {
+      "get": {
+        "summary": "Récupérer le profil de l'utilisateur",
+        "description": "Récupère les informations du profil de l'utilisateur connecté.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Profil de l'utilisateur récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nom": { "type": "string", "example": "Doe" },
+                    "prenom": { "type": "string", "example": "John" },
+                    "email": { "type": "string", "example": "john.doe@example.com" },
+                    "role": { "type": "string", "example": "client" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur lors de la récupération du profil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Utilisateur non trouvé" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé - Token manquant ou invalide"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "summary": "Déconnecter l'utilisateur",
+        "description": "Déconnecte l'utilisateur en supprimant le refreshToken.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Déconnexion réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Déconnexion réussie" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur lors de la déconnexion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Erreur lors de la déconnexion" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé - Token manquant ou invalide"
+          }
+        }
+      }
+    },
+    "/users/updateprofile": {
+      "put": {
+        "summary": "Mettre à jour le profil de l'utilisateur",
+        "description": "Met à jour les informations du profil de l'utilisateur connecté.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nom": { "type": "string", "example": "Doe" },
+                  "prenom": { "type": "string", "example": "Jane" },
+                  "email": { "type": "string", "example": "jane.doe@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Profil mis à jour avec succès" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "nom": { "type": "string", "example": "Doe" },
+                        "prenom": { "type": "string", "example": "Jane" },
+                        "email": { "type": "string", "example": "jane.doe@example.com" },
+                        "role": { "type": "string", "example": "client" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur lors de la mise à jour du profil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Erreur lors de la mise à jour du profil" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé - Token manquant ou invalide"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "nom": { "type": "string" },
+          "prenom": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

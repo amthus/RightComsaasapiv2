@@ -1,0 +1,34 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environnement local
+.env
+.env.local
+
+# Fichiers de configuration d'IDE
+.vscode/
+.idea/
+
+# Fichiers temporaires
+*.log
+*.swp
+*~
+*.bak
+*.tmp
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Dossiers de build
+build/
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
