@@ -47,6 +47,6 @@ app.use((err, req, res, next) => {
 });
 
 // Démarrage du serveur
-const HOST = process.env.HOST || '127.0.0.1';  // Si pas de variable, fallback sur localhost
+const HOST = process.env.HOST || '127.0.0.1';
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, HOST, () => console.log(`Serveur en écoute sur ${HOST}:${PORT}...`));

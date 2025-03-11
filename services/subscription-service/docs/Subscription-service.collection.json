@@ -1,0 +1,821 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+	  "title": "RightComSaas Subscription-service",
+	  "description": "API pour gérer les produits, les plans et les abonnements",
+	  "version": "1.0.0"
+	},
+	"servers": [
+	  {
+		"url": "http://localhost:3000"
+	  }
+	],
+	"paths": {
+	  "/product/product": {
+		"post": {
+		  "summary": "Créer un produit",
+		  "tags": ["Produits"],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "multipart/form-data": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"product_name": {
+					  "type": "string"
+					},
+					"description": {
+					  "type": "string"
+					},
+					"image": {
+					  "type": "string",
+					  "format": "binary"
+					}
+				  }
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"201": {
+			  "description": "Produit créé avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f5"
+					  },
+					  "product_name": {
+						"type": "string",
+						"example": "Produit A"
+					  },
+					  "description": {
+						"type": "string",
+						"example": "Description du produit A"
+					  },
+					  "image": {
+						"type": "string",
+						"example": "https://example.com/image.png"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de créer le produit"
+			}
+		  }
+		},
+		"get": {
+		  "summary": "Récupérer tous les produits",
+		  "tags": ["Produits"],
+		  "responses": {
+			"200": {
+			  "description": "Liste des produits récupérée avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "array",
+					"items": {
+					  "type": "object",
+					  "properties": {
+						"_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f5"
+						},
+						"product_name": {
+						  "type": "string",
+						  "example": "Produit A"
+						},
+						"description": {
+						  "type": "string",
+						  "example": "Description du produit A"
+						},
+						"image": {
+						  "type": "string",
+						  "example": "https://example.com/image.png"
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de récupérer les produits"
+			}
+		  }
+		}
+	  },
+	  "/product/{productId}": {
+		"patch": {
+		  "summary": "Mettre à jour un produit",
+		  "tags": ["Produits"],
+		  "parameters": [
+			{
+			  "name": "productId",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f5"
+			  }
+			}
+		  ],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "application/json": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"product_name": {
+					  "type": "string",
+					  "example": "Produit A Mis à Jour"
+					},
+					"description": {
+					  "type": "string",
+					  "example": "Nouvelle description du produit A"
+					}
+				  }
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"200": {
+			  "description": "Produit mis à jour avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f5"
+					  },
+					  "product_name": {
+						"type": "string",
+						"example": "Produit A Mis à Jour"
+					  },
+					  "description": {
+						"type": "string",
+						"example": "Nouvelle description du produit A"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"404": {
+			  "description": "Produit non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de mettre à jour le produit"
+			}
+		  }
+		},
+		"delete": {
+		  "summary": "Supprimer un produit",
+		  "tags": ["Produits"],
+		  "parameters": [
+			{
+			  "name": "productId",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f5"
+			  }
+			}
+		  ],
+		  "responses": {
+			"200": {
+			  "description": "Produit supprimé avec succès"
+			},
+			"404": {
+			  "description": "Produit non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de supprimer le produit"
+			}
+		  }
+		}
+	  },
+	  "/plan/createPlan": {
+		"post": {
+		  "summary": "Créer un plan",
+		  "tags": ["Plans"],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "application/json": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"name": {
+					  "type": "string",
+					  "enum": ["free", "lite", "pro", "enterprise"],
+					  "default": "free"
+					},
+					"price": {
+					  "type": "number",
+					  "format": "float",
+					  "example": 29.99
+					},
+					"billing_cycle": {
+					  "type": "string",
+					  "enum": ["monthly", "annually"],
+					  "example": "monthly"
+					},
+					"features": {
+					  "type": "array",
+					  "items": {
+						"type": "string"
+					  },
+					  "example": ["Accès illimité", "Support 24/7", "Stockage 100GB"]
+					},
+					"product_id": {
+					  "type": "string",
+					  "example": "67d021cb40174eea4d41f1f5"
+					}
+				  }
+				},
+				"example": {
+				  "name": "pro",
+				  "price": 29.99,
+				  "billing_cycle": "monthly",
+				  "features": ["Accès illimité", "Support 24/7", "Stockage 100GB"],
+				  "product_id": "67d021cb40174eea4d41f1f5"
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"201": {
+			  "description": "Plan créé avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f6"
+					  },
+					  "name": {
+						"type": "string",
+						"example": "pro"
+					  },
+					  "price": {
+						"type": "number",
+						"example": 29.99
+					  },
+					  "billing_cycle": {
+						"type": "string",
+						"example": "monthly"
+					  },
+					  "features": {
+						"type": "array",
+						"items": {
+						  "type": "string"
+						},
+						"example": ["Accès illimité", "Support 24/7", "Stockage 100GB"]
+					  },
+					  "product_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f5"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de créer le plan"
+			}
+		  }
+		}
+	  },
+	  "/plan/plans": {
+		"get": {
+		  "summary": "Récupérer tous les plans",
+		  "tags": ["Plans"],
+		  "responses": {
+			"200": {
+			  "description": "Liste des plans récupérée avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "array",
+					"items": {
+					  "type": "object",
+					  "properties": {
+						"_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f6"
+						},
+						"name": {
+						  "type": "string",
+						  "example": "pro"
+						},
+						"price": {
+						  "type": "number",
+						  "example": 29.99
+						},
+						"billing_cycle": {
+						  "type": "string",
+						  "example": "monthly"
+						},
+						"features": {
+						  "type": "array",
+						  "items": {
+							"type": "string"
+						  },
+						  "example": ["Accès illimité", "Support 24/7", "Stockage 100GB"]
+						},
+						"product_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f5"
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de récupérer les plans"
+			}
+		  }
+		}
+	  },
+	  "/plan/updatePlan/{id}": {
+		"patch": {
+		  "summary": "Mettre à jour un plan",
+		  "tags": ["Plans"],
+		  "parameters": [
+			{
+			  "name": "id",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f6"
+			  }
+			}
+		  ],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "application/json": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"name": {
+					  "type": "string",
+					  "example": "pro"
+					},
+					"price": {
+					  "type": "number",
+					  "format": "float",
+					  "example": 39.99
+					},
+					"billing_cycle": {
+					  "type": "string",
+					  "enum": ["monthly", "annually"],
+					  "example": "annually"
+					},
+					"features": {
+					  "type": "array",
+					  "items": {
+						"type": "string"
+					  },
+					  "example": ["Accès illimité", "Support 24/7", "Stockage 500GB"]
+					}
+				  }
+				},
+				"example": {
+				  "name": "pro",
+				  "price": 39.99,
+				  "billing_cycle": "annually",
+				  "features": ["Accès illimité", "Support 24/7", "Stockage 500GB"]
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"200": {
+			  "description": "Plan mis à jour avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f6"
+					  },
+					  "name": {
+						"type": "string",
+						"example": "pro"
+					  },
+					  "price": {
+						"type": "number",
+						"example": 39.99
+					  },
+					  "billing_cycle": {
+						"type": "string",
+						"example": "annually"
+					  },
+					  "features": {
+						"type": "array",
+						"items": {
+						  "type": "string"
+						},
+						"example": ["Accès illimité", "Support 24/7", "Stockage 500GB"]
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"404": {
+			  "description": "Plan non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de mettre à jour le plan"
+			}
+		  }
+		}
+	  },
+	  "/plan/deletePlan/{id}": {
+		"delete": {
+		  "summary": "Supprimer un plan",
+		  "tags": ["Plans"],
+		  "parameters": [
+			{
+			  "name": "id",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f6"
+			  }
+			}
+		  ],
+		  "responses": {
+			"200": {
+			  "description": "Plan supprimé avec succès"
+			},
+			"404": {
+			  "description": "Plan non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de supprimer le plan"
+			}
+		  }
+		}
+	  },
+	  "/plan/product/{productId}": {
+		"get": {
+		  "summary": "Récupérer les plans par product_id",
+		  "tags": ["Plans"],
+		  "parameters": [
+			{
+			  "name": "productId",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f5"
+			  }
+			}
+		  ],
+		  "responses": {
+			"200": {
+			  "description": "Liste des plans récupérée avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "array",
+					"items": {
+					  "type": "object",
+					  "properties": {
+						"_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f6"
+						},
+						"name": {
+						  "type": "string",
+						  "example": "pro"
+						},
+						"price": {
+						  "type": "number",
+						  "example": 29.99
+						},
+						"billing_cycle": {
+						  "type": "string",
+						  "example": "monthly"
+						},
+						"features": {
+						  "type": "array",
+						  "items": {
+							"type": "string"
+						  },
+						  "example": ["Accès illimité", "Support 24/7", "Stockage 100GB"]
+						},
+						"product_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f5"
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"404": {
+			  "description": "Aucun plan trouvé pour ce product_id"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de récupérer les plans"
+			}
+		  }
+		}
+	  },
+	  "/subscription": {
+		"post": {
+		  "summary": "Créer un abonnement",
+		  "tags": ["Abonnements"],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "application/json": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"user_id": {
+					  "type": "string",
+					  "example": "67d021cb40174eea4d41f1f7"
+					},
+					"plan_id": {
+					  "type": "string",
+					  "example": "67d021cb40174eea4d41f1f6"
+					},
+					"start_date": {
+					  "type": "string",
+					  "format": "date-time",
+					  "example": "2023-10-01T00:00:00Z"
+					},
+					"end_date": {
+					  "type": "string",
+					  "format": "date-time",
+					  "example": "2024-10-01T00:00:00Z"
+					},
+					"status": {
+					  "type": "string",
+					  "enum": ["active", "inactive", "pending"],
+					  "example": "active"
+					}
+				  }
+				},
+				"example": {
+				  "user_id": "67d021cb40174eea4d41f1f7",
+				  "plan_id": "67d021cb40174eea4d41f1f6",
+				  "start_date": "2023-10-01T00:00:00Z",
+				  "end_date": "2024-10-01T00:00:00Z",
+				  "status": "active"
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"201": {
+			  "description": "Abonnement créé avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f8"
+					  },
+					  "user_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f7"
+					  },
+					  "plan_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f6"
+					  },
+					  "start_date": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2023-10-01T00:00:00Z"
+					  },
+					  "end_date": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2024-10-01T00:00:00Z"
+					  },
+					  "status": {
+						"type": "string",
+						"example": "active"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de créer l'abonnement"
+			}
+		  }
+		},
+		"get": {
+		  "summary": "Récupérer tous les abonnements",
+		  "tags": ["Abonnements"],
+		  "responses": {
+			"200": {
+			  "description": "Liste des abonnements récupérée avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "array",
+					"items": {
+					  "type": "object",
+					  "properties": {
+						"_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f8"
+						},
+						"user_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f7"
+						},
+						"plan_id": {
+						  "type": "string",
+						  "example": "67d021cb40174eea4d41f1f6"
+						},
+						"start_date": {
+						  "type": "string",
+						  "format": "date-time",
+						  "example": "2023-10-01T00:00:00Z"
+						},
+						"end_date": {
+						  "type": "string",
+						  "format": "date-time",
+						  "example": "2024-10-01T00:00:00Z"
+						},
+						"status": {
+						  "type": "string",
+						  "example": "active"
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de récupérer les abonnements"
+			}
+		  }
+		}
+	  },
+	  "/subscription/{subscriptionId}": {
+		"patch": {
+		  "summary": "Mettre à jour un abonnement",
+		  "tags": ["Abonnements"],
+		  "parameters": [
+			{
+			  "name": "subscriptionId",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f8"
+			  }
+			}
+		  ],
+		  "requestBody": {
+			"required": true,
+			"content": {
+			  "application/json": {
+				"schema": {
+				  "type": "object",
+				  "properties": {
+					"status": {
+					  "type": "string",
+					  "enum": ["active", "inactive", "pending"],
+					  "example": "inactive"
+					}
+				  }
+				},
+				"example": {
+				  "status": "inactive"
+				}
+			  }
+			}
+		  },
+		  "responses": {
+			"200": {
+			  "description": "Abonnement mis à jour avec succès",
+			  "content": {
+				"application/json": {
+				  "schema": {
+					"type": "object",
+					"properties": {
+					  "_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f8"
+					  },
+					  "user_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f7"
+					  },
+					  "plan_id": {
+						"type": "string",
+						"example": "67d021cb40174eea4d41f1f6"
+					  },
+					  "start_date": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2023-10-01T00:00:00Z"
+					  },
+					  "end_date": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2024-10-01T00:00:00Z"
+					  },
+					  "status": {
+						"type": "string",
+						"example": "inactive"
+					  }
+					}
+				  }
+				}
+			  }
+			},
+			"400": {
+			  "description": "Requête invalide - Données manquantes ou incorrectes"
+			},
+			"404": {
+			  "description": "Abonnement non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de mettre à jour l'abonnement"
+			}
+		  }
+		},
+		"delete": {
+		  "summary": "Supprimer un abonnement",
+		  "tags": ["Abonnements"],
+		  "parameters": [
+			{
+			  "name": "subscriptionId",
+			  "in": "path",
+			  "required": true,
+			  "schema": {
+				"type": "string",
+				"example": "67d021cb40174eea4d41f1f8"
+			  }
+			}
+		  ],
+		  "responses": {
+			"200": {
+			  "description": "Abonnement supprimé avec succès"
+			},
+			"404": {
+			  "description": "Abonnement non trouvé"
+			},
+			"500": {
+			  "description": "Erreur serveur - Impossible de supprimer l'abonnement"
+			}
+		  }
+		}
+	  }
+	}
+  }
