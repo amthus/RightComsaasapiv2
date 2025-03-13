@@ -1,76 +1,46 @@
-const Subscription = require("../models/subscriptionModel.js");
-const mongoose = require("mongoose");
+const Subscription = require("../models/subscriptionModel");
+const { validateProductExistence, validateUserExistence } = require("../utils/planValidations");
 
-const { StatusCodes } = require("http-status-codes");
+module.exports = {
+  createSubscription: async (user_id, plan_id, start_date, end_date, status) => {
+    // Valider l'existence de l'utilisateur et du produit (plan)
+    await validateUserExistence(user_id);
+    await validateProductExistence(plan_id);
 
-class SubscriptionService {
-  async createSubscription(subscriptionData) {
-    try {
-      //checking if the product exists
-      console.log(subscriptionData.plan_id);
+    // Créer l'abonnement
+    return await Subscription.createSubscription(user_id, plan_id, start_date, end_date, status);
+  },
 
-      const planExist = await mongoose
-        .model("Plan")
-        .findById(subscriptionData.plan_id);
-      console.log(planExist);
+  getAllSubscriptions: async () => {
+    return await Subscription.find();
+  },
 
+  getSubscriptionById: async (subscriptionId) => {
+    return await Subscription.findById(subscriptionId);
+  },
 
-      const subscription = await Subscription.createSubscription(
-        subscriptionData.user_id,
-        subscriptionData.plan_id,
-        subscriptionData.start_date,
-        subscriptionData.end_date,
-        subscriptionData.status
-      );
-
-      return subscription;
-    } catch (error) {
-      if (!planExist) {
-        throw { status: StatusCodes.BAD_REQUEST, message: erreurs };
-      }
-      if (!userExist) {
-        throw { status: StatusCodes.BAD_REQUEST, message: erreurs };
-      }
-      if (error.name === "ValidationError") {
-        const erreurs = Object.values(error.errors).map((err) => err.message);
-        throw { status: StatusCodes.BAD_REQUEST, message: erreurs };
-      }
-
-      if (error.code === 11000) {
-        const field = Object.keys(error.keyValue)[0];
-        throw {
-          status: StatusCodes.BAD_REQUEST,
-          message: `La valeur '${error.keyValue[field]}' pour le champ ${field} existe déjà`,
-        };
-      }
-
-      throw {
-        status: 500,
-        message: "Une erreur inattendue est survenue",
-        error: error.message,
-      };
+  updateSubscription: async (subscriptionId, updateData) => {
+    if (updateData.user_id) {
+      await validateUserExistence(updateData.user_id);
     }
-  }
-
-  async getSubscription(subscriptionData) {
-    try {
-      const subscription = await Subscription.find({}).sort("createdAt");
-      return subscription;
-    } catch (error) {
-      throw error;
+    if (updateData.plan_id) {
+      await validateProductExistence(updateData.plan_id);
     }
-  }
 
-  async updateSubscription(subscriptionData) {
-    const subscription = await Subscription.findByIdAndUpdate(
-      { _id: subscriptionData.subscription_id },
-      {
-        status: subscriptionData.status,
-      },
-      { new: true, runValidators: true }
-    );
+    return await Subscription.findByIdAndUpdate(subscriptionId, updateData, { new: true });
+  },
 
-    return subscription;
-  }
-}
-module.exports = new SubscriptionService();
+  deleteSubscription: async (subscriptionId) => {
+    return await Subscription.findByIdAndDelete(subscriptionId);
+  },
+
+  revokeSubscription: async (subscriptionId) => {
+    return await Subscription.findByIdAndUpdate(subscriptionId, { status: "canceled" }, { new: true });
+  },
+
+  upgradeSubscription: async (subscriptionId, newPlanId) => {
+    await validateProductExistence(newPlanId);
+
+    return await Subscription.findByIdAndUpdate(subscriptionId, { plan_id: newPlanId }, { new: true });
+  },
+};

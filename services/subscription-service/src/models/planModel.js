@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const PlanSchema = new mongoose.Schema(
   {
-    name: { type: String, enum: ["free", "lite" ,"pro" ,"enterprise"], default: "free" },
+    name: { type: String, enum: ["free", "lite" ,"pro" ,"team","enterprise"], default: "free" },
     price: {
       type: Number,
       required: [true, "Please provide a price"],

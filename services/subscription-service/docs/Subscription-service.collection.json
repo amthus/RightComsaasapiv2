@@ -7,7 +7,7 @@
 	},
 	"servers": [
 	  {
-		"url": "http://localhost:3000"
+		"url": "http://192.168.86.97:5000"
 	  }
 	],
 	"paths": {
@@ -213,6 +213,7 @@
 		  }
 		}
 	  },
+
 	  "/plan/createPlan": {
 		"post": {
 		  "summary": "Créer un plan",
@@ -239,13 +240,7 @@
 					  "enum": ["monthly", "annually"],
 					  "example": "monthly"
 					},
-					"features": {
-					  "type": "array",
-					  "items": {
-						"type": "string"
-					  },
-					  "example": ["Accès illimité", "Support 24/7", "Stockage 100GB"]
-					},
+
 					"product_id": {
 					  "type": "string",
 					  "example": "67d021cb40174eea4d41f1f5"
@@ -256,7 +251,6 @@
 				  "name": "pro",
 				  "price": 29.99,
 				  "billing_cycle": "monthly",
-				  "features": ["Accès illimité", "Support 24/7", "Stockage 100GB"],
 				  "product_id": "67d021cb40174eea4d41f1f5"
 				}
 			  }
@@ -311,6 +305,8 @@
 		  }
 		}
 	  },
+
+
 	  "/plan/plans": {
 		"get": {
 		  "summary": "Récupérer tous les plans",

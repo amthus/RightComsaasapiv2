@@ -29,7 +29,7 @@ const validateBillingCycle = (billingCycle) => {
 };
 
 const validatePlanName = (planName) => {
-  const allowedPlanNames = ["free", "lite", "pro", "enterprise"];
+  const allowedPlanNames = ["free", "lite", "pro","team", "enterprise"];
   if (!allowedPlanNames.includes(planName)) {
     throw {
       status: StatusCodes.BAD_REQUEST,
@@ -53,9 +53,24 @@ const validatePlanUniqueness = async (productId, planName, billingCycle) => {
   }
 };
 
+const validateUserExistence = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("L'identifiant de l'utilisateur est invalide. Veuillez vérifier l'ID et réessayer.");
+  }
+
+  const userExist = await mongoose.model("User").findById(userId);
+  if (!userExist) {
+    throw {
+      status: StatusCodes.BAD_REQUEST,
+      message: "L'utilisateur spécifié n'existe pas",
+    };
+  }
+ }
+
 module.exports = {
   validateProductExistence,
   validateBillingCycle,
   validatePlanName,
   validatePlanUniqueness,
+  validateUserExistence
 };

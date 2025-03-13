@@ -1,7 +1,6 @@
 const PlanService = require("../services/planService");
 const { StatusCodes } = require("http-status-codes");
 
-// Réponse standardisée
 const sendResponse = (res, status, data = null, message = null, error = null) => {
   res.status(status).json({ data, message, error });
 };

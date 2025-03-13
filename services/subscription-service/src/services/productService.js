@@ -46,7 +46,7 @@ class ProductService {
         const field = Object.keys(error.keyValue)[0];
         throw {
           status: StatusCodes.BAD_REQUEST,
-          message: `La valeur '${error.keyValue[field]}' pour le champ ${field} existe déjà`,
+          message: `Le produit '${error.keyValue[field]}'existe déjà`,
         };
       }
 
